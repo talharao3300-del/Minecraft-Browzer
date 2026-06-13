@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MineKing - Browser Minecraft</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{overflow:hidden;font-family:'Segoe UI',Arial,sans-serif;background:#000;}
+  canvas{display:block;}
+  #crosshair{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);color:#fff;font-size:22px;text-shadow:0 0 3px #000;pointer-events:none;user-select:none;}
+  #hud-top{position:fixed;left:50%;bottom:78px;transform:translateX(-50%);text-align:center;pointer-events:none;text-shadow:1px 1px 2px #000;color:#fff;font-size:15px;}
+  #hotbar{position:fixed;left:50%;bottom:12px;transform:translateX(-50%);display:flex;gap:4px;background:rgba(0,0,0,.45);padding:5px;border-radius:6px;}
+  .slot{width:52px;height:52px;border:2px solid #555;border-radius:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;font-size:20px;position:relative;background:rgba(30,30,30,.6);cursor:pointer;}
+  .slot.sel{border-color:#fff;box-shadow:0 0 8px #fff;}
+  .slot .num{position:absolute;top:1px;left:3px;font-size:10px;color:#ccc;}
+  .slot .cnt{position:absolute;bottom:1px;right:3px;font-size:11px;color:#ffd;font-weight:bold;text-shadow:1px 1px 1px #000;}
+  .slot .blk{width:26px;height:26px;border:1px solid rgba(0,0,0,.4);image-rendering:pixelated;}
+  .slot .lbl{font-size:8px;color:#ddd;margin-top:2px;}
+  #progress{position:fixed;left:50%;top:56%;transform:translateX(-50%);width:120px;height:10px;background:rgba(0,0,0,.5);border:1px solid #fff;display:none;}
+  #progress div{height:100%;width:0;background:#6f6;}
+  #flash{position:fixed;inset:0;background:#f00;opacity:0;pointer-events:none;transition:opacity .2s;z-index:9;}
+  #msg{position:fixed;left:50%;top:30%;transform:translateX(-50%);color:#fff;font-size:22px;text-shadow:2px 2px 3px #000;opacity:0;transition:opacity .5s;pointer-events:none;z-index:9;}
+  #overlay{position:fixed;inset:0;background:rgba(10,20,30,.85);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;z-index:10;cursor:pointer;text-align:center;}
+  #overlay h1{font-size:42px;color:#7ee787;text-shadow:3px 3px 0 #295;}
+  #overlay p{margin:5px 0;color:#ccd;font-size:14px;}
+  #overlay .play{margin-top:14px;padding:12px 40px;background:#3fa34d;border:3px solid #2a5;color:#fff;font-size:20px;border-radius:4px;}
+  #overlay #btn-new{margin-top:10px;padding:7px 18px;background:#a33;border:2px solid #822;font-size:13px;}
+  .modal{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);background:rgba(20,25,30,.96);border:3px solid #666;border-radius:8px;padding:16px;color:#fff;display:none;z-index:11;min-width:400px;max-height:80vh;overflow:auto;}
+  .modal h3{margin-bottom:8px;color:#7ee787;}
+  .arm-row{display:flex;gap:6px;margin:6px 0;align-items:center;}
+  .arm-row b{width:80px;font-size:13px;}
+  .arm{width:46px;height:46px;border:2px solid #555;border-radius:4px;font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;background:rgba(40,40,40,.8);}
+  .arm.on{border-color:#7ee787;box-shadow:0 0 6px #7ee787;}
+  .modal .close{margin-top:10px;padding:8px 24px;background:#3fa34d;border:none;color:#fff;border-radius:4px;cursor:pointer;}
+  .craft-row{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:14px;}
+  .craft-row span:first-child{min-width:160px;}
+  .craft-row .cost{color:#aaa;font-size:12px;flex:1;}
+  .craft-row button{padding:4px 14px;background:#3fa34d;border:none;color:#fff;border-radius:4px;cursor:pointer;}
+  .craft-row button:disabled{background:#555;cursor:default;}
+  #craft-res{font-size:12px;color:#ffd;margin-bottom:8px;}
+  #craft-palette{display:flex;gap:5px;margin:8px 0;flex-wrap:wrap;}
+  .pal{padding:4px 8px;border:2px solid #555;border-radius:4px;cursor:pointer;font-size:12px;display:flex;align-items:center;gap:5px;background:rgba(40,40,40,.8);color:#fff;}
+  .pal.sel{border-color:#7ee787;box-shadow:0 0 5px #7ee787;}
+  .pal .sw{width:14px;height:14px;border:1px solid #000;display:inline-block;}
+  .itm{width:26px;height:26px;image-rendering:pixelated;}
+  #inv-list{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;}
+  #craft-area{display:flex;align-items:center;gap:14px;margin:8px 0;}
+  #craft-grid{display:grid;grid-template-columns:repeat(3,46px);grid-gap:4px;}
+  .cg{width:46px;height:46px;border:2px solid #555;border-radius:4px;background:rgba(40,40,40,.8);cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .cg .sw{width:30px;height:30px;border:1px solid #000;}
+  .cg.lock{opacity:.25;cursor:not-allowed;}
+  #craft-arrow{font-size:26px;color:#7ee787;}
+  #craft-result{min-width:130px;font-size:14px;margin-bottom:6px;}
+  #craft-out button{padding:6px 18px;background:#3fa34d;border:none;color:#fff;border-radius:4px;cursor:pointer;}
+  #craft-out button:disabled{background:#555;cursor:default;}
+  #craft-quick{margin-top:8px;border-top:1px solid #444;padding-top:6px;}
+  #info{position:fixed;top:8px;left:8px;color:#fff;font-size:12px;text-shadow:1px 1px 2px #000;pointer-events:none;}
+</style>
+</head>
+<body>
+<div id="info"></div>
+<div id="crosshair">+</div>
+<div id="flash"></div>
+<div id="msg"></div>
+<div id="hud-top"><div id="armorbar"></div><div id="hearts"></div><div id="hungerbar"></div></div>
+<div id="progress"><div></div></div>
+<div id="hotbar"></div>
+<div id="panel" class="modal">
+  <h3>🎒 Inventory</h3>
+  <div id="inv-list"></div>
+  <h3>🛡️ Armor / Kavach</h3>
+  <div id="armor-list"></div>
+  <div style="font-size:12px;color:#aaa;margin-top:6px;">Armor pehenne ke liye click karo · Iron/Diamond armor crafting (C) se unlock hota hai</div>
+  <button class="close" onclick="closePanel()">Wapas Game Mein</button>
+</div>
+<div id="craftpanel" class="modal">
+  <h3>🛠️ Crafting</h3>
+  <div id="craft-res"></div>
+  <div id="craft-palette"></div>
+  <div id="craft-area">
+    <div id="craft-grid"></div>
+    <div id="craft-arrow">➜</div>
+    <div id="craft-out">
+      <div id="craft-result">—</div>
+      <button id="craft-btn">Craft</button>
+    </div>
+  </div>
+  <div id="craft-hint" style="font-size:12px;color:#aaa;"></div>
+  <div id="craft-quick"></div>
+  <div style="font-size:11px;color:#888;margin-top:6px;">Material chuno, phir grid ke khane par click karke rakho · hatane ke liye dobara click karo</div>
+  <button class="close" onclick="closeCraft()">Wapas Game Mein</button>
+</div>
+<div id="furnacepanel" class="modal">
+  <h3>🔥 Furnace / Bhatti</h3>
+  <div id="furnace-fuel" style="font-size:12px;color:#aaa;margin-bottom:8px;"></div>
+  <div id="furnace-list"></div>
+  <div style="font-size:11px;color:#888;margin-top:6px;">Raw iron/gold smelt karo, sand se glass banao, raw khana pakao · Fuel: coal, log ya planks</div>
+  <button class="close" onclick="closeFurnace()">Wapas Game Mein</button>
+</div>
+<div id="overlay">
+  <h1>⛏️ MineKing</h1>
+  <p><b>WASD</b> chalna · <b>Space</b> jump · <b>Shift</b> sprint · <b>Mouse</b> dekhna</p>
+  <p><b>Left Click</b> block todo / mob maaro · <b>Right Click</b> block lagao / khana khao / door kholo / furnace use karo</p>
+  <p><b>1-9 / Scroll</b> hotbar · <b>E</b> armor · <b>C</b> crafting · <b>V</b> camera · <b>M</b> sound</p>
+  <p>⛏️ Neeche caves mein coal, iron, gold aur diamond milte hain - bedrock tak khodo!</p>
+  <p>🔥 Furnace banao (8 cobble) - raw iron/gold smelt karo aur khana pakao · 🔦 Torch raat ko roshni deti hai</p>
+  <p>🌙 Raat ko zombies, skeletons, spiders aur creepers aate hain - bachke rehna!</p>
+  <p>💾 Game automatically save hota hai</p>
+  <div class="play">▶ Click to Play</div>
+  <div class="play" id="btn-new">🗑 New World (purana save delete)</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="src/sounds.js"></script>
+<script src="src/textures.js"></script>
+<script src="src/world.js"></script>
+<script src="src/mobs.js"></script>
+<script src="src/inventory.js"></script>
+<script src="src/player.js"></script>
+<script src="src/main.js"></script>
+</body>
+</html>
