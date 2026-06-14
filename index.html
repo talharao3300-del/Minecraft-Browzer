@@ -26,36 +26,457 @@
   #overlay p{margin:5px 0;color:#ccd;font-size:14px;}
   #overlay .play{margin-top:14px;padding:12px 40px;background:#3fa34d;border:3px solid #2a5;color:#fff;font-size:20px;border-radius:4px;}
   #overlay #btn-new{margin-top:10px;padding:7px 18px;background:#a33;border:2px solid #822;font-size:13px;}
-  .modal{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);background:rgba(20,25,30,.96);border:3px solid #666;border-radius:8px;padding:16px;color:#fff;display:none;z-index:11;min-width:400px;max-height:80vh;overflow:auto;}
-  .modal h3{margin-bottom:8px;color:#7ee787;}
-  .arm-row{display:flex;gap:6px;margin:6px 0;align-items:center;}
-  .arm-row b{width:80px;font-size:13px;}
-  .arm{width:46px;height:46px;border:2px solid #555;border-radius:4px;font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;background:rgba(40,40,40,.8);}
-  .arm.on{border-color:#7ee787;box-shadow:0 0 6px #7ee787;}
-  .modal .close{margin-top:10px;padding:8px 24px;background:#3fa34d;border:none;color:#fff;border-radius:4px;cursor:pointer;}
-  .craft-row{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:14px;}
-  .craft-row span:first-child{min-width:160px;}
-  .craft-row .cost{color:#aaa;font-size:12px;flex:1;}
-  .craft-row button{padding:4px 14px;background:#3fa34d;border:none;color:#fff;border-radius:4px;cursor:pointer;}
-  .craft-row button:disabled{background:#555;cursor:default;}
-  #craft-res{font-size:12px;color:#ffd;margin-bottom:8px;}
-  #craft-palette{display:flex;gap:5px;margin:8px 0;flex-wrap:wrap;}
-  .pal{padding:4px 8px;border:2px solid #555;border-radius:4px;cursor:pointer;font-size:12px;display:flex;align-items:center;gap:5px;background:rgba(40,40,40,.8);color:#fff;}
-  .pal.sel{border-color:#7ee787;box-shadow:0 0 5px #7ee787;}
-  .pal .sw{width:14px;height:14px;border:1px solid #000;display:inline-block;}
-  .itm{width:26px;height:26px;image-rendering:pixelated;}
-  #inv-list{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;}
-  #craft-area{display:flex;align-items:center;gap:14px;margin:8px 0;}
-  #craft-grid{display:grid;grid-template-columns:repeat(3,46px);grid-gap:4px;}
-  .cg{width:46px;height:46px;border:2px solid #555;border-radius:4px;background:rgba(40,40,40,.8);cursor:pointer;display:flex;align-items:center;justify-content:center;}
-  .cg .sw{width:30px;height:30px;border:1px solid #000;}
-  .cg.lock{opacity:.25;cursor:not-allowed;}
-  #craft-arrow{font-size:26px;color:#7ee787;}
-  #craft-result{min-width:130px;font-size:14px;margin-bottom:6px;}
-  #craft-out button{padding:6px 18px;background:#3fa34d;border:none;color:#fff;border-radius:4px;cursor:pointer;}
-  #craft-out button:disabled{background:#555;cursor:default;}
-  #craft-quick{margin-top:8px;border-top:1px solid #444;padding-top:6px;}
-  #info{position:fixed;top:8px;left:8px;color:#fff;font-size:12px;text-shadow:1px 1px 2px #000;pointer-events:none;}
+  .modal{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);display:none;z-index:11;overflow:auto;}
+  
+  /* Minecraft GUI Theme */
+  .mc-gui {
+    background: #c6c6c6 !important;
+    border-top: 4px solid #ffffff !important;
+    border-left: 4px solid #ffffff !important;
+    border-bottom: 4px solid #555555 !important;
+    border-right: 4px solid #555555 !important;
+    box-shadow: 0 0 25px rgba(0,0,0,0.85), inset 0 0 4px rgba(255,255,255,0.6) !important;
+    border-radius: 0px !important;
+    padding: 14px !important;
+    color: #373737 !important;
+    font-family: 'Courier New', Courier, monospace, Arial, sans-serif !important;
+    font-weight: bold;
+    user-select: none;
+    min-width: 480px !important;
+    max-height: 95vh;
+  }
+  
+  .mc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    font-size: 16px;
+    border-bottom: 3px solid #555555;
+    padding-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  
+  .mc-close-btn {
+    background: #a33333;
+    border-top: 2px solid #ff6666;
+    border-left: 2px solid #ff6666;
+    border-bottom: 2px solid #551111;
+    border-right: 2px solid #551111;
+    color: white;
+    padding: 2px 10px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  .mc-close-btn:hover {
+    background: #c44444;
+  }
+  
+  .mc-body {
+    display: flex;
+    gap: 14px;
+  }
+  
+  .mc-recipe-book {
+    width: 200px;
+    background: #a0a0a0;
+    border-top: 3px solid #555555;
+    border-left: 3px solid #555555;
+    border-bottom: 3px solid #ffffff;
+    border-right: 3px solid #ffffff;
+    padding: 6px;
+    display: none;
+    flex-direction: column;
+    height: 332px;
+    overflow-y: auto;
+  }
+  .mc-recipe-book.open {
+    display: flex;
+  }
+  .recipe-title {
+    font-size: 13px;
+    text-align: center;
+    border-bottom: 2px dashed #555555;
+    padding-bottom: 4px;
+    margin-bottom: 8px;
+    color: #222;
+  }
+  .recipe-list {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .recipe-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #c6c6c6;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-bottom: 2px solid #555555;
+    border-right: 2px solid #555555;
+    padding: 5px;
+    cursor: pointer;
+    font-size: 11px;
+    color: #333;
+  }
+  .recipe-item:hover {
+    background: #dcdcdc;
+    border-color: #ffffff #555555 #555555 #ffffff;
+  }
+  .recipe-item img {
+    width: 22px;
+    height: 22px;
+    image-rendering: pixelated;
+  }
+  
+  .mc-main-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+  }
+  
+  .mc-top-section {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    justify-content: space-between;
+    background: #8b8b8b;
+    border-top: 3px solid #555555;
+    border-left: 3px solid #555555;
+    border-bottom: 3px solid #ffffff;
+    border-right: 3px solid #ffffff;
+    padding: 10px;
+  }
+  
+  .mc-armor-column {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .mc-slot {
+    width: 44px;
+    height: 44px;
+    background: #8b8b8b;
+    border-top: 3px solid #373737;
+    border-left: 3px solid #373737;
+    border-bottom: 3px solid #ffffff;
+    border-right: 3px solid #ffffff;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-sizing: border-box;
+  }
+  .mc-slot:hover {
+    background: #9c9c9c;
+    box-shadow: inset 0 0 0 4px rgba(255,255,255,0.25);
+  }
+  .mc-slot.selected-material {
+    border: 3px solid #00bcd4 !important;
+    box-shadow: 0 0 8px #00bcd4;
+  }
+  
+  .mc-slot img {
+    width: 30px;
+    height: 30px;
+    image-rendering: pixelated;
+    pointer-events: none;
+  }
+  .mc-slot .cnt {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    font-size: 11px;
+    color: #ffffdd;
+    font-weight: bold;
+    text-shadow: 1px 1px 1px #000000;
+    pointer-events: none;
+  }
+  .mc-slot.empty-armor::before {
+    content: attr(data-icon);
+    font-size: 22px;
+    opacity: 0.35;
+    filter: grayscale(1);
+  }
+  
+  .mc-steve-box {
+    width: 88px;
+    height: 148px;
+    background: #141414;
+    border-top: 3px solid #373737;
+    border-left: 3px solid #373737;
+    border-bottom: 3px solid #ffffff;
+    border-right: 3px solid #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .steve-preview {
+    width: 60px;
+    height: 130px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    image-rendering: pixelated;
+  }
+  .steve-head {
+    width: 26px;
+    height: 26px;
+    background: #c8986a;
+    border-top: 5px solid #5a3a1e; /* hair */
+    position: relative;
+  }
+  .steve-head::before, .steve-head::after {
+    content: '';
+    position: absolute;
+    bottom: 6px;
+    width: 3px;
+    height: 3px;
+    background: white;
+  }
+  .steve-head::before { left: 3px; border-left: 2px solid #3b3bd1; }
+  .steve-head::after { right: 3px; border-right: 2px solid #3b3bd1; }
+  
+  .steve-body {
+    display: flex;
+    width: 46px;
+    height: 42px;
+  }
+  .steve-arm-l, .steve-arm-r {
+    width: 10px;
+    height: 42px;
+    background: #c8986a;
+    border-top: 10px solid #00a8a8; /* sleeve */
+    position: relative;
+  }
+  .steve-torso {
+    width: 26px;
+    height: 42px;
+    background: #00a8a8;
+    position: relative;
+  }
+  .steve-legs {
+    display: flex;
+    width: 26px;
+    height: 42px;
+  }
+  .steve-leg-l, .steve-leg-r {
+    width: 13px;
+    height: 42px;
+    background: #3b3bd1;
+    position: relative;
+  }
+  
+  /* Steve Armor Overlays */
+  .helmet-overlay {
+    position: absolute;
+    top: -2px; left: -2px; right: -2px; height: 16px;
+    border: 1px solid rgba(0,0,0,0.3);
+    display: none;
+    z-index: 2;
+  }
+  .chestplate-torso-overlay {
+    position: absolute;
+    inset: -1px;
+    border: 1px solid rgba(0,0,0,0.3);
+    display: none;
+    z-index: 2;
+  }
+  .chestplate-arm-overlay {
+    position: absolute;
+    top: -1px; left: -1px; right: -1px; height: 28px;
+    border: 1px solid rgba(0,0,0,0.3);
+    display: none;
+    z-index: 2;
+  }
+  .leggings-overlay {
+    position: absolute;
+    top: -1px; left: -1px; right: -1px; height: 32px;
+    border: 1px solid rgba(0,0,0,0.3);
+    display: none;
+    z-index: 2;
+  }
+  .boots-overlay {
+    position: absolute;
+    bottom: -1px; left: -1px; right: -1px; height: 14px;
+    border: 1px solid rgba(0,0,0,0.3);
+    display: none;
+    z-index: 2;
+  }
+  
+  .armor-color-Leather { background: #8a5a3a !important; }
+  .armor-color-Gold { background: #f4cf3a !important; }
+  .armor-color-Iron { background: #d8d8d8 !important; }
+  .armor-color-Diamond { background: #4aedd9 !important; }
+  
+  .mc-crafting-box {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: center;
+  }
+  .mc-crafting-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: #222;
+  }
+  .recipe-book-toggle {
+    background: #2e7d32;
+    border-top: 2px solid #55a055;
+    border-left: 2px solid #55a055;
+    border-bottom: 2px solid #113311;
+    border-right: 2px solid #113311;
+    color: white;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 1px 5px;
+  }
+  .recipe-book-toggle:hover {
+    background: #388e3c;
+  }
+  
+  .mc-crafting-grid-2x2 {
+    display: grid;
+    grid-template-columns: repeat(2, 44px);
+    gap: 4px;
+  }
+  .mc-crafting-grid-3x3 {
+    display: grid;
+    grid-template-columns: repeat(3, 44px);
+    gap: 4px;
+  }
+  
+  .mc-crafting-arrow {
+    font-size: 26px;
+    color: #373737;
+    margin: 0 4px;
+  }
+  
+  .mc-crafting-result-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .mc-output-slot {
+    width: 50px;
+    height: 50px;
+    background: #9c9c9c;
+  }
+  .mc-output-slot img {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .mc-btn {
+    background: #558b2f;
+    border-top: 2px solid #88c055;
+    border-left: 2px solid #88c055;
+    border-bottom: 2px solid #224c0a;
+    border-right: 2px solid #224c0a;
+    color: white;
+    font-weight: bold;
+    padding: 3px 10px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 11px;
+  }
+  .mc-btn:hover:not(:disabled) {
+    background: #689f38;
+  }
+  .mc-btn:disabled {
+    background: #555555;
+    border-color: #333333;
+    color: #999999;
+    cursor: not-allowed;
+  }
+  
+  .mc-inventory-label {
+    font-size: 12px;
+    color: #373737;
+    margin-top: 4px;
+    text-transform: uppercase;
+  }
+  
+  .mc-inventory-grid {
+    display: grid;
+    grid-template-columns: repeat(9, 44px);
+    gap: 4px;
+    background: #8b8b8b;
+    border-top: 3px solid #555555;
+    border-left: 3px solid #555555;
+    border-bottom: 3px solid #ffffff;
+    border-right: 3px solid #ffffff;
+    padding: 6px;
+  }
+  
+  .mc-hotbar-grid {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+    background: #8b8b8b;
+    border-top: 3px solid #555555;
+    border-left: 3px solid #555555;
+    border-bottom: 3px solid #ffffff;
+    border-right: 3px solid #ffffff;
+    padding: 6px;
+    margin-top: 4px;
+  }
+  
+  .craft-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 6px 0;
+    font-size: 13px;
+    background: #b8b8b8;
+    padding: 6px;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-bottom: 2px solid #555555;
+    border-right: 2px solid #555555;
+  }
+  .craft-row span:first-child {
+    font-weight: bold;
+    min-width: 140px;
+  }
+  .craft-row .cost {
+    color: #444444;
+    font-size: 11px;
+    flex: 1;
+  }
+  .craft-row button {
+    background: #558b2f;
+    border-top: 2px solid #88c055;
+    border-left: 2px solid #88c055;
+    border-bottom: 2px solid #224c0a;
+    border-right: 2px solid #224c0a;
+    color: white;
+    font-weight: bold;
+    padding: 4px 10px;
+    cursor: pointer;
+  }
+  .craft-row button:hover:not(:disabled) {
+    background: #689f38;
+  }
+  .craft-row button:disabled {
+    background: #777777;
+    border-color: #555555;
+    color: #aaaaaa;
+    cursor: not-allowed;
+  }
 </style>
 </head>
 <body>
@@ -66,37 +487,125 @@
 <div id="hud-top"><div id="armorbar"></div><div id="hearts"></div><div id="hungerbar"></div></div>
 <div id="progress"><div></div></div>
 <div id="hotbar"></div>
-<div id="panel" class="modal">
-  <h3>🎒 Inventory</h3>
-  <div id="inv-list"></div>
-  <h3>🛡️ Armor / Kavach</h3>
-  <div id="armor-list"></div>
-  <div style="font-size:12px;color:#aaa;margin-top:6px;">Armor pehenne ke liye click karo · Iron/Diamond armor crafting (C) se unlock hota hai</div>
-  <button class="close" onclick="closePanel()">Wapas Game Mein</button>
-</div>
-<div id="craftpanel" class="modal">
-  <h3>🛠️ Crafting</h3>
-  <div id="craft-res"></div>
-  <div id="craft-palette"></div>
-  <div id="craft-area">
-    <div id="craft-grid"></div>
-    <div id="craft-arrow">➜</div>
-    <div id="craft-out">
-      <div id="craft-result">—</div>
-      <button id="craft-btn">Craft</button>
+<div id="panel" class="modal mc-gui">
+  <div class="mc-header">
+    <span>🎒 Inventory</span>
+    <button class="mc-close-btn" onclick="closePanel()">&times;</button>
+  </div>
+  
+  <div class="mc-body">
+    <!-- Left: Recipe Book -->
+    <div class="mc-recipe-book" id="recipe-book-inv">
+      <div class="recipe-title">Recipe Book</div>
+      <div class="recipe-list" id="recipe-list-inv"></div>
+    </div>
+    
+    <!-- Main Inventory Panel -->
+    <div class="mc-main-panel">
+      <!-- Top: Armor & Steve & Crafting (2x2) -->
+      <div class="mc-top-section">
+        <!-- Armor Columns -->
+        <div class="mc-armor-column" id="mc-armor-slots"></div>
+        
+        <!-- Steve Preview -->
+        <div class="mc-steve-box">
+          <div class="steve-preview">
+            <div class="steve-head" id="steve-head">
+              <div class="helmet-overlay" id="overlay-helmet"></div>
+            </div>
+            <div class="steve-body">
+              <div class="steve-arm-l" id="steve-arm-l">
+                <div class="chestplate-arm-overlay" id="overlay-chestplate-arm-l"></div>
+              </div>
+              <div class="steve-torso" id="steve-torso">
+                <div class="chestplate-torso-overlay" id="overlay-chestplate-torso"></div>
+              </div>
+              <div class="steve-arm-r" id="steve-arm-r">
+                <div class="chestplate-arm-overlay" id="overlay-chestplate-arm-r"></div>
+              </div>
+            </div>
+            <div class="steve-legs">
+              <div class="steve-leg-l" id="steve-leg-l">
+                <div class="leggings-overlay" id="overlay-leggings-l"></div>
+                <div class="boots-overlay" id="overlay-boots-l"></div>
+              </div>
+              <div class="steve-leg-r" id="steve-leg-r">
+                <div class="leggings-overlay" id="overlay-leggings-r"></div>
+                <div class="boots-overlay" id="overlay-boots-r"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Crafting (2x2) -->
+        <div class="mc-crafting-box">
+          <div class="mc-crafting-header">
+            <span>Crafting</span>
+            <button class="recipe-book-toggle" onclick="toggleRecipeBook('inv')">📖</button>
+          </div>
+          <div class="mc-crafting-grid-2x2" id="mc-crafting-grid-inv"></div>
+          <div class="mc-crafting-arrow">➜</div>
+          <div class="mc-crafting-result-box">
+            <div class="mc-slot mc-output-slot" id="mc-craft-out-inv"></div>
+            <button class="mc-btn" id="mc-craft-btn-inv">Craft</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Bottom: 3x9 Slots -->
+      <div class="mc-inventory-label">Inventory</div>
+      <div class="mc-inventory-grid" id="mc-inventory-slots"></div>
+      
+      <!-- Hotbar -->
+      <div class="mc-hotbar-grid" id="mc-hotbar-slots-inv"></div>
     </div>
   </div>
-  <div id="craft-hint" style="font-size:12px;color:#aaa;"></div>
-  <div id="craft-quick"></div>
-  <div style="font-size:11px;color:#888;margin-top:6px;">Material chuno, phir grid ke khane par click karke rakho · hatane ke liye dobara click karo</div>
-  <button class="close" onclick="closeCraft()">Wapas Game Mein</button>
 </div>
-<div id="furnacepanel" class="modal">
-  <h3>🔥 Furnace / Bhatti</h3>
-  <div id="furnace-fuel" style="font-size:12px;color:#aaa;margin-bottom:8px;"></div>
+
+<div id="craftpanel" class="modal mc-gui">
+  <div class="mc-header">
+    <span>🛠️ Crafting Table</span>
+    <button class="mc-close-btn" onclick="closeCraft()">&times;</button>
+  </div>
+  
+  <div class="mc-body">
+    <!-- Left: Recipe Book -->
+    <div class="mc-recipe-book" id="recipe-book-craft">
+      <div class="recipe-title">Recipe Book</div>
+      <div class="recipe-list" id="recipe-list-craft"></div>
+    </div>
+    
+    <!-- Main Crafting Panel -->
+    <div class="mc-main-panel">
+      <!-- Top: 3x3 Grid and Result -->
+      <div class="mc-top-section" style="justify-content: center; gap: 24px;">
+        <button class="recipe-book-toggle" onclick="toggleRecipeBook('craft')" style="align-self: flex-start;">📖 Book</button>
+        <div class="mc-crafting-grid-3x3" id="mc-crafting-grid-table"></div>
+        <div class="mc-crafting-arrow">➜</div>
+        <div class="mc-crafting-result-box">
+          <div class="mc-slot mc-output-slot" id="mc-craft-out-table"></div>
+          <button class="mc-btn" id="mc-craft-btn-table">Craft</button>
+        </div>
+      </div>
+      
+      <!-- Bottom: 3x9 Slots -->
+      <div class="mc-inventory-label">Inventory</div>
+      <div class="mc-inventory-grid" id="mc-inventory-slots-table"></div>
+      
+      <!-- Hotbar -->
+      <div class="mc-hotbar-grid" id="mc-hotbar-slots-table"></div>
+    </div>
+  </div>
+</div>
+
+<div id="furnacepanel" class="modal mc-gui">
+  <div class="mc-header">
+    <span>🔥 Furnace / Bhatti</span>
+    <button class="mc-close-btn" onclick="closeFurnace()">&times;</button>
+  </div>
+  <div id="furnace-fuel" style="font-size:12px;color:#333;margin-bottom:8px;font-weight:bold;"></div>
   <div id="furnace-list"></div>
-  <div style="font-size:11px;color:#888;margin-top:6px;">Raw iron/gold smelt karo, sand se glass banao, raw khana pakao · Fuel: coal, log ya planks</div>
-  <button class="close" onclick="closeFurnace()">Wapas Game Mein</button>
+  <div style="font-size:11px;color:#555;margin-top:6px;font-style:italic;">Raw iron/gold smelt karo, sand se glass banao, raw khana pakao · Fuel: coal, log ya planks</div>
 </div>
 <div id="overlay">
   <h1>⛏️ MineKing</h1>
@@ -106,7 +615,7 @@
   <p>⛏️ Neeche caves mein coal, iron, gold aur diamond milte hain - bedrock tak khodo!</p>
   <p>🔥 Furnace banao (8 cobble) - raw iron/gold smelt karo aur khana pakao · 🔦 Torch raat ko roshni deti hai</p>
   <p>🌙 Raat ko zombies, skeletons, spiders aur creepers aate hain - bachke rehna!</p>
-  <p>💾 Game automatically save hota hai</p>
+  <p>💾 Made By Talha</p>
   <div class="play">▶ Click to Play</div>
   <div class="play" id="btn-new">🗑 New World (purana save delete)</div>
 </div>
