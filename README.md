@@ -48,7 +48,7 @@ A Minecraft-style voxel game that runs directly in the browser. Built with Three
 ### Option 1: Github Pages (online)
 
 ```
-(https://talharao3300-del.github.io/Minecraft-Browzer/)
+https://talharao3300-del.github.io/Minecraft-Browzer/
 ```
 
 ## 💡 Game Tips
