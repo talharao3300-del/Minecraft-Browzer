@@ -215,16 +215,17 @@ const Mobs = {
     const x0 = Math.floor(p.x - w), x1 = Math.floor(p.x + w);
     const y0 = Math.floor(p.y), y1 = Math.floor(p.y + h);
     const z0 = Math.floor(p.z - w), z1 = Math.floor(p.z + w);
+    const initialVel = (axis === 0) ? m.vel.x : (axis === 1 ? m.vel.y : m.vel.z);
     for (let x = x0; x <= x1; x++) for (let y = y0; y <= y1; y++) for (let z = z0; z <= z1; z++){
       if (!World.isSolid(x, y, z)) continue;
       if (axis === 0){
-        if (m.vel.x > 0) p.x = x - w - 0.001; else if (m.vel.x < 0) p.x = x + 1 + w + 0.001;
+        if (initialVel > 0) p.x = x - w - 0.001; else if (initialVel < 0) p.x = x + 1 + w + 0.001;
         m.vel.x = 0;
       } else if (axis === 1){
-        if (m.vel.y > 0) p.y = y - h - 0.001; else { p.y = y + 1; m.onGround = true; }
+        if (initialVel > 0) p.y = y - h - 0.001; else { p.y = y + 1; m.onGround = true; }
         m.vel.y = 0;
       } else {
-        if (m.vel.z > 0) p.z = z - w - 0.001; else if (m.vel.z < 0) p.z = z + 1 + w + 0.001;
+        if (initialVel > 0) p.z = z - w - 0.001; else if (initialVel < 0) p.z = z + 1 + w + 0.001;
         m.vel.z = 0;
       }
     }
