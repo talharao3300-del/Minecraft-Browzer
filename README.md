@@ -45,16 +45,11 @@ A Minecraft-style voxel game that runs directly in the browser. Built with Three
 
 ## 🚀 How to Run / Kaise Chalayein
 
-### Option 1: GitLab Pages (online)
-Pipeline game ko GitLab Pages par deploy karti hai:
+### Option 1: Github Pages (online)
 
 ```
-https://game-king-group.gitlab.io/game-king-project
+(https://talharao3300-del.github.io/Minecraft-Browzer/)
 ```
-
-### Option 2: Locally
-1. Repository clone ya download karo
-2. `index.html` ko browser mein open karo (double click) - bas itna hi!
 
 ## 💡 Game Tips
 
